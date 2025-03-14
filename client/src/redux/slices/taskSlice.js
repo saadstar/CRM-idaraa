@@ -65,7 +65,7 @@ export const taskSlice = createApi({
         body:data,
         credentials: "include",
       }),
-      invalidatesTags: ["task"],
+      invalidatesTags: ["task",'bulding'],
     }),
     getSingleTask: builder.query({
       query: (id) => ({

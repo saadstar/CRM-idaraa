@@ -8,6 +8,7 @@ import {
   updateBulding,
   trashBulding,
   uploadPriceOffer,
+  getClients
 } from "../controllers/buldingController.js";
 import { isAdminRoute, protectRoute } from "../middlewares/authMiddlewave.js";
 import uploadPDFMiddleware from "../middlewares/uploadPDFMidleware.js";
@@ -23,8 +24,9 @@ router.post(
   createBulding
 );
 router.post("/activity/:id", protectRoute, postBuldingActivity);
-
+    
 router.get("/", protectRoute, getBuldings);
+router.get("/clients", protectRoute, getClients);
 router.get("/:id", protectRoute, getBulding);
 
 router.put("/create-subtask/:id", protectRoute, createSubTask);

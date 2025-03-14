@@ -9,7 +9,7 @@ import { Menu, Transition } from "@headlessui/react";
 import AddSubTask from "../task/AddSubTask";
 import AddTask from "../task/AddTask";
 import ConfirmatioDialog from "../Dialogs";
-import { useTrashTaskMutation } from "../../redux/slices";
+import { useTrashBuldingMutation, useTrashTaskMutation } from "../../redux/slices";
 import { toast } from "sonner";
 import AddPriceOffer from "./AddPriceOffer";
 import AddBulding from "./AddBulding";
@@ -19,7 +19,7 @@ const BuldingDialog = ({ bulding }) => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openPriceOffer, setOpenPriceOffer] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [trashTask] = useTrashTaskMutation();  
+  const [trashBulding] = useTrashBuldingMutation();  
   const navigate = useNavigate();
   
   const deleteClicks = () => {
@@ -27,9 +27,10 @@ const BuldingDialog = ({ bulding }) => {
   };
   const deleteHandler = async () => {
     try {
-      const res = await trashTask({
+      const res = await trashBulding({
         id: bulding._id,
-        isTrashed:"trash"
+        isTrashed:true,
+        url:"bulding"
       }).unwrap();
       toast.success(res?.message);
       setOpenDialog(false);
@@ -127,8 +128,8 @@ const BuldingDialog = ({ bulding }) => {
         key={bulding?._id}
       />
 
-      <AddSubTask open={open} setOpen={setOpen} url='bulding' />
-      <AddPriceOffer open={openPriceOffer} setOpen={setOpenPriceOffer}  />
+      <AddSubTask open={open} id={bulding?._id} setOpen={setOpen} url='bulding' />
+      <AddPriceOffer open={openPriceOffer} setOpen={setOpenPriceOffer} id={bulding?._id}  />
 
       <ConfirmatioDialog
         open={openDialog}

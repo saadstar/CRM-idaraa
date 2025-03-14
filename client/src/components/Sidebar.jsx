@@ -1,12 +1,10 @@
 import React from "react";
 import {
-  MdDashboard,
-  MdOutlineAddTask,
+  MdDashboard,  
   MdOutlinePendingActions,
   MdSettings,
   MdTaskAlt,
 } from "react-icons/md";
-import { FaBuildingShield } from "react-icons/fa6";
 import { ImUsers } from "react-icons/im";
 import { BsBuildings } from "react-icons/bs";
 import { FaTasks, FaTrashAlt, FaUsers } from "react-icons/fa";
@@ -14,6 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { setOpenSidebar } from "../redux/slices/authSlice";
 import clsx from "clsx";
+import { IoAccessibility } from "react-icons/io5";
+import { FaRegMessage } from "react-icons/fa6";
+
+
 
 const linkData = [
   {
@@ -52,10 +54,15 @@ const linkData = [
     icon: <ImUsers />,
   },
   {
-    label: "التقارير",
-    link: "reports",    
-    icon:<FaBuildingShield />,
-  },
+    label: "عملاء حاليين",
+    link: "clients",
+    icon: <IoAccessibility />,
+  }, 
+  {
+    label: "الرسائل و الاعلانات",
+    link: "messages",
+    icon: <FaRegMessage  />,
+  }, 
   {
     label: "الفريق",
     link: "team",    
@@ -109,7 +116,7 @@ const Sidebar = () => {
         ))}
       </div>
 
-      <div className=''>
+      <div className='pt-0'>
         <button className='w-full flex gap-2 px-2 items-center text-lg text-gold-light'>
           <MdSettings />
           <span>الأعدادات</span>

@@ -2,11 +2,12 @@ import { useForm } from "react-hook-form";
 import ModalWrapper from "../ModalWrapper";
 import { Dialog } from "@headlessui/react";
 import Button from "../Button";
-import { useCreateSubTaskMutation } from "../../redux/slices";
+import { useAddPriceOfferMutation } from "../../redux/slices";
 import { toast } from "sonner";
 import FileInput from "../FileInput";
 
 const AddPriceOffer = ({ open, setOpen, id }) => {
+  const [addPriceOffer]=useAddPriceOfferMutation();
   const {
     register,
     handleSubmit,
@@ -19,16 +20,19 @@ const AddPriceOffer = ({ open, setOpen, id }) => {
     return fileType === 'application/pdf' || 'Only PDF files are allowed';
   };
     const handleOnSubmit = async (data) => {    
-    console.log(data)  
-    // try {
-    // //   toast.success(res.message);
-    //   setTimeout(() => {
-    //     setOpen(false);
-    //   }, 500);
-    // } catch (err) {
-    //   console.log(err);
-    //   toast.error(err?.data?.message || err.error);
-    // }
+    try {
+      const formData = new FormData();
+      formData.append("priceOffer", data.priceOffer[0]);
+
+      const res = await addPriceOffer({ id, formData }).unwrap();
+      toast.success(res.message);
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (

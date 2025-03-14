@@ -19,6 +19,8 @@ import { setOpenSidebar } from "./redux/slices/authSlice";
 import "moment/locale/ar";
 import moment from "moment";
 import BuldingDetails from "./pages/BuldingDetails";
+import Customars from "./pages/Customars";
+import Clients from "./pages/Clients";
 
 function Layout() {
   const { user } = useSelector((state) => state.auth);  
@@ -126,6 +128,8 @@ function App() {
           <Route path='/in-progress/:status' element={<Tasks />} />
           <Route path='/todo/:status' element={<Tasks />} />
           <Route path='/buldings' element={<Buldings />} />
+          <Route path='/customars' element={<Customars />} />
+          <Route path='/clients' element={<Clients />} />          
           <Route path='/team' element={<Users />} />
           <Route path='/trashed' element={<Trash />} />
           <Route path='/task/:id' element={<TaskDetails />} />

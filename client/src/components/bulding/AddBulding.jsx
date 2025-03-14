@@ -5,12 +5,11 @@ import { FaArrowDown,FaArrowUp } from "react-icons/fa";
 import Textbox from "../Textbox";
 import { useForm } from "react-hook-form";
 import Button from "../Button";
-import { useCreateTaskMutation, useUpdateTaskMutation } from "../../redux/slices";
+import { useCreateBuldingMutation, useCreateTaskMutation, useUpdateBuldingMutation, useUpdateTaskMutation } from "../../redux/slices";
 import { toast } from "sonner";
 
 
-const AddBulding = ({ open, setOpen, bulding }) => { 
-  console.log("all that for seetting new bulding",bulding?.client[0]);
+const AddBulding = ({ open, setOpen, bulding }) => {   
   const defaultValues = {
     documnetNum: bulding?.documnetNum || "",    
     identityId: bulding?.identityId || "",
@@ -34,26 +33,37 @@ const AddBulding = ({ open, setOpen, bulding }) => {
     formState: { errors },
   } = useForm({ defaultValues }); 
   const [clientCollapse, setClientCollapse] = useState(false);
-  const [createTask,{isLoading}] = useCreateTaskMutation();
-  const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
-
-
-
+  const [createBulding,{isLoading}] = useCreateBuldingMutation();
+  const [updateBulding, { isLoading: isUpdating }] = useUpdateBuldingMutation();
+ 
   const submitHandler = async (data) => {
-    console.log(data);
-    try {   
-      const res = bulding?._id ?
-        await updateTask({...data,_id:bulding._id}).unwrap() :
-        await createTask(data).unwrap();
-      toast.success(res.message);        
-      setTimeout(() =>{
-        setOpen(false);
-      },500)
+    try {
+      const formData = new FormData();      
+      Object.keys(data).forEach((key) => {
+        if (key !== "assets") {
+          formData.append(key, data[key]);
+        }
+      });
+  
+      if (data.assets && data.assets.length) {
+        const filesArray = Array.from(data.assets);
+        filesArray.forEach((file) => {  
+          formData.append("assets", file);
+        });
+      }
+  
+      const res = bulding?._id
+        ? await updateBulding({...data,_id:bulding?._id}).unwrap()
+        : await createBulding(formData).unwrap();
+  
+      toast.success(res.message || "تمت العملية بنجاح!");
+      setTimeout(() => setOpen(false), 500);
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      console.error("خطأ أثناء الإرسال:", err);
+      toast.error(err?.data?.message || "حدث خطأ غير متوقع");
     }
   };
-
+  
 
   return (
     <div >
@@ -234,7 +244,8 @@ const AddBulding = ({ open, setOpen, bulding }) => {
             </div>                   
             <div className='text-right py-2 sm:flex sm:flex-row gap-4'>             
                 <Button
-                  label='تم'
+                  label={bulding? isUpdating?"جاري التعديل":"تعديل":
+                    isLoading?"جاري ...":'تم'}
                   type='submit'
                   className='bg-gold-dark px-8 text-sm font-semibold text-white hover:bg-gold-light  sm:w-auto'
                 />              

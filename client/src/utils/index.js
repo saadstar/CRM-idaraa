@@ -96,7 +96,7 @@ export const buldings = [
         _id: "67c9a3f37911992d7cb53a82",
       },
     ],
-    assets: [], //  صور العقار و صك الملكيه
+    assets: ["uploads\\pdf\\1741265391556-455104430_280973.jpg"], //  صور العقار و صك الملكيه
     priceOffer: ["uploads\\pdf\\1741268231195-عرض سعر رقم 4473.pdf"], //  عرض الاسعار
     isTrashed: false,
     subTasks: [
@@ -262,9 +262,19 @@ export const  singleBulding={
         },
         _id: "67c9a3f37911992d7cb53a82",
       },
+      {
+        type: "مشكله",
+        activity: "this is comment",
+        date: "2025-03-06T13:29:56.787Z",
+        by: {
+          _id: "674ac558eef95f0341181ee8",
+          name: "test",
+        },
+        _id: "67c9a3f37911992d7cb53a82",
+      },
     ],
-    assets: [], //  صور العقار و صك الملكيه
-    priceOffer: ["uploads\\pdf\\1741268231195-عرض سعر رقم 4473.pdf"], //  عرض الاسعار
+    assets:  ["uploads/images\\1741266786327-455104430_280973.jpg","uploads/images\\1741266786327-455104430_280973.jpg","uploads/images\\1741266786327-455104430_280973.jpg","uploads/images\\1741266786327-455104430_280973.jpg","uploads/images\\1741266786327-455104430_280973.jpg"],
+    priceOffer: ["uploads\\pdf\\1741268231195-عرض سعر رقم 4473.pdf","uploads\\pdf\\1741268231195-عرض سعر رقم 4473.pdf","uploads\\pdf\\1741268231195-عرض سعر رقم 4473.pdf"], //  عرض الاسعار
     isTrashed: false,
     subTasks: [
       {

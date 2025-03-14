@@ -16,7 +16,7 @@ const BuldingCard = ({ bulding }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className='w-full h-fit bg-black/50 shadow-md p-4 rounded-xl '>
+      <div className='w-full h-fit bg-black/50 shadow-md p-4 rounded-xl ' key={bulding?._id}>
         <div className='w-full flex justify-between'>
           <div
             className={clsx(

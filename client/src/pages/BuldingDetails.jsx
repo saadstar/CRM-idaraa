@@ -4,26 +4,24 @@ import React, { useState } from "react";
 import { FaBug, FaTasks, FaThumbsUp, FaUser } from "react-icons/fa";
 import { GrInProgress } from "react-icons/gr";
 import {
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
   MdKeyboardDoubleArrowUp,
   MdOutlineDoneAll,
   MdOutlineMessage,
   MdTaskAlt,
 } from "react-icons/md";
 import { RxActivityLog } from "react-icons/rx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { IoArrowBackSharp } from "react-icons/io5";
 import { toast } from "sonner";
 import Tabs from "../components/Tabs";
-import { PRIOTITYSTYELS, TASK_TYPE, getInitials, singleBulding } from "../utils";
 import Loading from "../components/Loader";
 import Button from "../components/Button";
-import { useGetSingleTaskQuery, usePostTaskActivityMutation } from "../redux/slices/taskSlice";
 import ImgLoader from "../components/ImgLoader";
+import { useGetSingleBuldingQuery, usePostBuldingActivityMutation } from "../redux/slices/buldingSlice";
 
 const defaultAssets = [
-  "https://images.pexels.com/photos/2418664/pexels-photo-2418664.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-  "https://images.pexels.com/photos/8797307/pexels-photo-8797307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+  "https://dummyimage.com/300x200/cccccc/ffffff.png&text=No+Image",
+  "https://placehold.co/150x150"
 ];
 
 
@@ -34,27 +32,32 @@ const TABS = [
 ];
 
 const TASKTYPEICON = {
-    "هغغ": (
+    "البدأ": (
     <div className='w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-white'>
       <MdOutlineMessage />,
     </div>
   ),
-  started: (
+  "معاينه": (
     <div className='w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white'>
       <FaThumbsUp size={20} />
     </div>
   ),
-  assigned: (
+  "تعليق": (
+    <div className='w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white'>
+      <FaThumbsUp size={20} />
+    </div>
+  ),
+  "عرض اسعار": (
     <div className='w-6 h-6 flex items-center justify-center rounded-full bg-gray-500 text-white'>
       <FaUser size={14} />
     </div>
   ),
-  bug: (
+  "مشكله": (
     <div className='text-red-600'>
       <FaBug size={24} />
     </div>
   ),
-  completed: (
+  "تم الانتهاء": (
     <div className='w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white'>
       <MdOutlineDoneAll size={24} />
     </div>
@@ -77,11 +80,9 @@ const act_types = [
 
 const BuldingDetails = () => {
   const { id } = useParams();
-  const { data } = useGetSingleTaskQuery(id);
-    const isLoading = false;
-  const [selected, setSelected] = useState(0);
-    //   const bulding = data?.bulding;
-    const bulding = singleBulding;
+  const navigate=useNavigate();
+  const { data,isLoading } = useGetSingleBuldingQuery(id);    
+  const [selected, setSelected] = useState(0);      
   if (isLoading) {
     return (
       <div className="py-10 flex justify-center min-h-screen">
@@ -91,9 +92,15 @@ const BuldingDetails = () => {
   }
   return (
     <div className='w-full flex flex-col gap-3 mb-4 overflow-y-hidden'>
-      <h1 className='text-2xl text-gray-100 font-bold'>{bulding?.title}</h1>
+      <div className="flex justify-between">
+      <h1 className='text-2xl text-gray-100 font-bold'>{data?.bulding?.documnetNum}</h1>
+      <button className='flex gap-2 items-center rounded-md border border-gold-dark px-2 hover:bg-gold-light shadow-md'onClick={() => navigate(-1)}>
+        <p className="text-white text-xl">عوده</p>
+        <IoArrowBackSharp color="white" />
+      </button>
+      </div>
 
-      <Tabs tabs={TABS} setSelected={setSelected}>
+      <Tabs tabs={TABS} setSelected={setSelected}>        
         {selected === 0 ? (
           <>
             <div className='w-full flex flex-col md:flex-row gap-5 2xl:gap-8 bg-white shadow-md p-8 overflow-y-auto'>
@@ -107,7 +114,7 @@ const BuldingDetails = () => {
                   >
                     <span className='text-lg text-gold-dark'><MdKeyboardDoubleArrowUp /></span>
                     <span className='text-lg'>صك رقم</span>
-                                      <span className='uppercase'>{ bulding?.documnetNum}</span>
+                                      <span className='uppercase'>{ data?.bulding?.documnetNum}</span>
                   </div>
 
                   <div className={clsx("flex items-center gap-2")}>
@@ -116,48 +123,77 @@ const BuldingDetails = () => {
                         "w-4 h-4 rounded-full bg-green-200"                        
                       )}
                     />
-                                      <span className='text-black uppercase text-right'>{bulding?.client[0]?.name}</span>
+                   <span className='text-black uppercase text-right'>{data.bulding?.client[0]?.name}</span>
                                       
                   </div>
                 </div>
 
                 <p className='text-gray-500 text-right'>
-                   أٌنشاء: {new Date(bulding?.createdAt).toDateString()}
+                   أٌنشاء: {new Date(data.bulding?.createdAt).toDateString()}
                 </p>
 
                 <div className='flex items-center gap-8 p-4 border-y border-gray-200'>
                   <div className='space-x-2'>
                     <span className='font-semibold'>صور العقار و الصك :</span>
-                    <span>{bulding?.assets?.length}</span>
+                    <span className="pr-1">{data.bulding?.assets?.length}</span>
                   </div>
 
                   <span className='text-gray-400'>|</span>
 
                   <div className='space-x-2'>
                     <span className='font-semibold'>التعليقات :</span>
-                    <span>{bulding?.subTasks?.length}</span>
+                    <span className="pr-1">{data?.bulding?.subTasks?.length}</span>
+                  </div>
+                  <div className='space-x-2'>
+                    <span className='font-semibold '>عروض الاسعار :</span>
+                    <span className="pr-1">{data?.bulding?.priceOffer?.length}</span>
                   </div>
                 </div>
-
+                <div className=' py-6'>
+                  <p className='text-gray-600 font-semibold text-lg'>
+                    بيانات الملاك 
+                  </p>
+                  <div className='' key={data.bulding?._id}>                    
+                      {data.bulding?.client.map((item)=>
+                      <div className='flex justify-between py-2 items-center border-t border-gray-200' key={item?._id}>  
+                        <div>
+                          <p className='text-lg font-semibold'>{"رقم الهويه "}</p>
+                          <span className='text-gray-500'>{item?.nationalId}</span>
+                        </div>
+                        <div>
+                          <p className='text-lg font-semibold'>{"الاسم"}</p>
+                          <span className='text-gray-500'>{item?.name}</span>
+                        </div>
+                        <div>
+                          <p className='text-lg font-semibold'>{"الهاتف"}</p>
+                          <span className='text-gray-500'>{item?.phone}</span>
+                        </div>
+                        <div>
+                          <p className='text-lg font-semibold'>{"نسبه التمليك"}</p>
+                          <span className='text-gray-500'>{item?.owiningPercentage || 0}%</span>
+                        </div>
+                      </div> )  }                                    
+                  </div>
+                </div>
                 <div className='space-y-4 py-6'>
                   <p className='text-gray-600 font-semibold test-sm'>
-                    التفاصيل
+                    بيانات العقار
                   </p>
-                  <div className='space-y-3' key={bulding?._id}>                    
+                  <div className='space-y-3' key={data.bulding?._id}>                    
                       <div                        
                         className='flex justify-between py-2 items-center border-t border-gray-200'
                       >                        
                         <div>
                           <p className='text-lg font-semibold'>{"رقم الهويه العقاريه"}</p>
-                          <span className='text-gray-500'>{bulding?.identityId}</span>
+                          <span className='text-gray-500'>{data.bulding?.identityId}</span>
                         </div>
                         <div>
                           <p className='text-lg font-semibold'>{"نوع العقار"}</p>
-                          <span className='text-gray-500'>{bulding?.type}</span>
+                          <span className='text-gray-500'>{data.bulding?.type}</span>
                         </div>
                         <div>
                           <p className='text-lg font-semibold'>{"نوع الاستخدام"}</p>
-                          <span className='text-gray-500'>{bulding?.usageType}</span>
+                          <span className='text-gray-500'>{data.bulding?.usageType}</span>
                         </div>
                       </div>                    
                       <div                        
@@ -165,15 +201,15 @@ const BuldingDetails = () => {
                       >                        
                         <div>
                           <p className='text-lg font-semibold'>{"الموقع"}</p>
-                          <span className='text-gray-500'>{bulding?.site}</span>
+                          <span className='text-gray-500'>{data.bulding?.site}</span>
                         </div>
                         <div>
                           <p className='text-lg font-semibold'>{"الحي"}</p>
-                          <span className='text-gray-500'>{bulding?.district}</span>
+                          <span className='text-gray-500'>{data.bulding?.district}</span>
                         </div>
                         <div>
                           <p className='text-lg font-semibold'>{"المدينه"}</p>
-                          <span className='text-gray-500'>{bulding?.city}</span>
+                          <span className='text-gray-500'>{data.bulding?.city}</span>
                         </div>
                       </div>                    
                       <div                        
@@ -181,11 +217,11 @@ const BuldingDetails = () => {
                       >                        
                         <div>
                           <p className='text-lg font-semibold'>{"رقم القطعه"}</p>
-                          <span className='text-gray-500'>{bulding?.pieceNumber}</span>
+                          <span className='text-gray-500'>{data.bulding?.pieceNumber}</span>
                         </div>
                         <div>
                           <p className='text-lg font-semibold'>{"مساحه العقار"}</p>
-                          <span className='text-gray-500'>{bulding?.size}</span>
+                          <span className='text-gray-500'>{data.bulding?.size}</span>
                         </div>                      
                       </div>                    
                       <div                        
@@ -193,7 +229,7 @@ const BuldingDetails = () => {
                       >                        
                         <div>
                           <p className='text-lg font-semibold'>{"سبب التقييم"}</p>
-                          <span className='text-gray-500 border-2 border-gray-300 rounded-md w-full px-4 mt-2'>{bulding?.reasone}</span>
+                          <span className='text-gray-500 border-2 border-gray-300 rounded-md w-full px-4 mt-2'>{data.bulding?.reasone}</span>
                         </div>                                            
                       </div>                    
                   </div>
@@ -204,7 +240,7 @@ const BuldingDetails = () => {
                     التعليقات
                   </p>
                   <div className='space-y-8'>
-                    {bulding?.subTasks?.map((el, index) => (
+                    {data.bulding?.subTasks?.map((el, index) => (
                       <div key={index} className='flex gap-3'>
                         <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-50-200'>
                           <MdTaskAlt className='text-violet-600' size={26} />
@@ -228,13 +264,41 @@ const BuldingDetails = () => {
                 <p className='text-lg font-semibold'>الصور</p>
 
                 <div className='w-full grid grid-cols-2 gap-4'>
-                  {bulding?.assets?.map((el, index) => (
-                    <img
-                      key={index}
-                      src={el}
-                      alt={bulding?.title}
+                  {data.bulding?.assets.length > 0 ? data.bulding?.assets?.map((el, index) =>{                    
+                    return (
+                     <img
+                     key={index}
+                     src={`http://localhost:8800/${el}`}  
+                     alt={data.bulding?.documnetNum}
+                     className='w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50'
+                   />
+                  )}):(
+                    defaultAssets.map((ele)=>(
+                      <img
+                      src={ele}
+                      alt={'defaultImg'}
                       className='w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50'
-                    />
+                      />
+                    ))
+                  )}
+                </div>
+                <p className='text-lg font-semibold'>عرض الاسعار</p>
+
+                <div className='w-full grid grid-cols-2 gap-4'>
+                  {data.bulding?.priceOffer.map((el, index) => (
+                    <div className="flex flex-col gap-2">
+                    <iframe
+                      key={index}
+                      src={`http://localhost:8800/${el}`}
+                      alt={data.bulding?.documnetNum}
+                      className='w-full rounded h-28 md:h-36 2xl:h-52 cursor-pointer transition-all duration-700 hover:scale-125 hover:z-50'
+                    ></iframe>       
+                      <a target="_blank" rel="noopener noreferrer" href={`http://localhost:8800/${el}`}>
+    <button className="bg-gold-dark  text-white px-4 py-2 rounded hover:bg-gold-light transition-all">
+      عرض الملف
+    </button>
+  </a>            
+                    </div>
                   ))}
                 </div>
               </div>
@@ -251,10 +315,9 @@ const BuldingDetails = () => {
 };
 
 const Activities = ({ activity, id }) => {
-  const [postTaskActivity,{isLoading}] = usePostTaskActivityMutation();
+  const [postBuldingActivity,{isLoading}] = usePostBuldingActivityMutation();
   const [selected, setSelected] = useState(act_types[0]);
-  const [text, setText] = useState("");
-
+  const [text, setText] = useState("");  
 
   const handleSubmit = async () => {
     try {
@@ -262,7 +325,7 @@ const Activities = ({ activity, id }) => {
         type: selected?.toLowerCase(),
         activity:text
       }
-      const res = await postTaskActivity({ body: activityDate, id }).unwrap();
+      const res = await postBuldingActivity({ body: activityDate, id }).unwrap();
       setText("");
       toast.success(res?.message);
     } catch (err) {
@@ -276,7 +339,7 @@ if (isLoading) {
       </div>
     )
   }
-  const Card = ({ item }) => {
+  const Card = ({ item }) => {        
     return (
       <div className='flex space-x-4 text-right'>
         <div className='flex flex-col items-center flex-shrink-0'>
@@ -291,7 +354,7 @@ if (isLoading) {
         <div className='flex flex-col gap-y-1 mb-8'>
           <p className='font-semibold'>{item?.by?.name}</p>
           <div className='text-gray-500 space-y-2'>
-            <span className='capitalize'>{item?.type}</span>
+            <span className='capitalize bg-gold-dark text-white rounded-xl px-2'>{item?.type}</span>
             <span className='text-sm mr-4'>{moment(item?.date).fromNow()}</span>
           </div>
           <div className='text-gray-700'>{item?.activity}</div>
@@ -308,7 +371,7 @@ if (isLoading) {
         <div className='w-full'>
           {activity?.map((el, index) => (
             <Card
-              key={index}
+              key={el?._id}
               item={el}
               isConnected={index < activity.length - 1}
             />
@@ -318,14 +381,14 @@ if (isLoading) {
 
       <div className='w-full md:w-1/3'>
         <h4 className='text-gray-600 font-semibold text-lg mb-5'>
-          إضافه تحرك
+          إضافه تحرك جديد
         </h4>
         <div className='w-full flex flex-wrap gap-5'>
           {act_types.map((item, index) => (
             <div key={index} className='flex gap-2 items-center'>
               <input
                 type='checkbox'
-                className='w-4 h-4 '
+                className='w-4 h-4 accent-gold-light rounded-sm text-white'
                 checked={selected === item ? true : false}
                 onChange={(e) => setSelected(item)}
               />
@@ -336,8 +399,8 @@ if (isLoading) {
             rows={10}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder='ملاحظات'
-            className='bg-white w-full mt-10 border border-gray-300 outline-none p-4 rounded-md focus:ring-2 ring-blue-500'
+            placeholder='ملاحظات التحرك'
+            className='bg-white w-full mt-10 border border-gray-300 outline-none p-4 rounded-md focus:ring-2 ring-gold-light'
           ></textarea>
           {isLoading ? (
             <Loading />
@@ -346,7 +409,7 @@ if (isLoading) {
               type='button'
               label='حفظ'
               onClick={handleSubmit}
-              className='bg-gold-dark text-gray-900 w-full rounded hover:bg-gold-light'
+              className='bg-gold-dark text-gray-100 w-full rounded hover:bg-gold-light'
             />
           )}
         </div>

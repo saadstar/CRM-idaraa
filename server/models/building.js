@@ -9,9 +9,9 @@ const buldingSchema = new Schema(
           type: Number,
           required: true,
         },
-        name: String,
-        owingPercentage: { type: Number, max: 100, min: 0 },
-        phone: String,
+        name: {type:String,default:"لا اسم"},
+        owingPercentage: { type: Number, max: 100, min: 0,default:0 },
+        phone: {type:String,default:"لا هاتف"},
       },
     ],
     identityId: {

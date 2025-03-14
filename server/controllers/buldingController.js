@@ -63,6 +63,17 @@ export const createBulding = async (req, res) => {
     return res.status(400).json({ status: false, message: error.message });
   }
 };
+export const getClients = async (req, res) => {
+  try {
+    const clients = await Bulding.find({}, "client").sort({ _id: -1 });     
+    const allClients = clients.flatMap(building => building.client);
+    res.status(200).json({ status: true, clients: allClients });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ status: false, message: error.message });
+  }
+};
+
 export const getBuldings = async (req, res) => {
   try {
     const { documnetNum, isTrashed } = req.query;    
@@ -167,25 +178,32 @@ export const postBuldingActivity = async (req, res) => {
 export const uploadPriceOffer = async (req, res) => {
   try {
     const { id } = req.params;
-
     const bulding = await Bulding.findById(id);
-
-    if (req.file) {
-      bulding.priceOffer.push(req.file.path);
+    if (!bulding) {
+      return res.status(404).json({ status: false, message: "لم يتم العثور على العقار" });
     }
+
+    // التحقق من رفع الملف
+    if (!req.file) {
+      return res.status(400).json({ status: false, message: "يرجى رفع ملف PDF صالح" });
+    }
+    if (!Array.isArray(bulding.priceOffer)) {
+      bulding.priceOffer = [];
+    }
+    bulding.priceOffer.push(req.file.path);
 
     await bulding.save();
 
     res.status(200).json({
       status: true,
       bulding,
-      message: `تم إضافه عرض الاسعار بنجاح`,
+      message: "تم إضافة عرض الأسعار بنجاح",
     });
   } catch (error) {
-    console.log(error);
-    return res.status(400).json({ status: false, message: error.message });
+    console.error("Upload Price Offer Error:", error);
+    return res.status(500).json({ status: false, message: "حدث خطأ أثناء رفع الملف" });
   }
-}; 
+};
 export const updateBulding = async (req, res) => {
   try {
     const { id } = req.params;
